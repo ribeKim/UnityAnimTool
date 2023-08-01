@@ -4,6 +4,7 @@ on:
   push:
     tags:
       - 'v*' # 'v'로 시작하는 태그를 갖는 푸시에 반응
+  workflow_dispatch: # 수동으로 워크플로우 실행
 
 jobs:
   deploy_release:

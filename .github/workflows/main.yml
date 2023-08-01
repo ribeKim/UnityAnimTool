@@ -23,9 +23,10 @@ jobs:
       - name: Read Version from package.json
         id: get_version
         run: |
-          version=$(node -p "require('./path/to/your_project_directory/package.json').version")
+          version=$(node -p "require('./package.json').version")
           echo "Version from package.json: $version"
           echo "::set-output name=version::$version" # 버전 값을 출력하여 GitHub Actions에 전달
+          echo "$ls -l"
 
       - name: Create and Deploy Release
         env:

@@ -3,17 +3,11 @@ const { GitHub } = require('@actions/github');
 const path = require('path');
 const fs = require('fs');
 
-async function getVersion() {
-    const packageJsonPath = path.join(process.cwd(), 'package.json');
-    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-    return packageJson.version;
-}
-
 async function main() {
     try {
         const githubToken = process.env.GITHUB_TOKEN;
         const githubRepo = process.env.GITHUB_REPOSITORY;
-        const version = await getVersion();
+        const version = require('./package.json').version;
         const projectName = 'UnityAnimTool';
         const releaseTitle = `${projectName}_V${version}`;
         const fileName = `${projectName}_V${version}.zip`;

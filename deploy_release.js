@@ -33,7 +33,7 @@ async function main() {
         // 릴리스 생성
         const release = await octokit.rest.repos.createRelease({
             owner,
-            repository,
+            repo,
             tag_name: `V${version}`, // 태그를 "V버전" 형식으로 설정
             name: releaseTitle,
             body: 'Release Notes',
@@ -42,7 +42,7 @@ async function main() {
         // 릴리스에 파일 첨부
         await octokit.rest.repos.uploadReleaseAsset({
             owner,
-            repository,
+            repo,
             release_id: release.data.id,
             name: fileName,
             data: fs.readFileSync(fileName),

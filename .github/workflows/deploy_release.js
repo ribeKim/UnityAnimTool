@@ -6,7 +6,7 @@ async function main() {
         const githubToken = process.env.GITHUB_TOKEN;
         const githubRepo = process.env.GITHUB_REPOSITORY;
         // package.json 파일의 version 속성을 읽어옴
-        const version = require('../package.json').version;
+        const version = require('./package.json').version;
         const projectName = 'UnityAnimTool';
         const releaseTitle = `${projectName}_V${version}`;
         const fileName = `${projectName}_V${version}.zip`;

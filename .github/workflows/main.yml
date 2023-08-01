@@ -5,6 +5,10 @@ on:
     tags:
       - 'v*' # 'v'로 시작하는 태그를 갖는 푸시에 반응
   workflow_dispatch: # 수동으로 워크플로우 실행
+    inputs:
+      tag_name:
+        description: 'Tag name (e.g., v1.0.0)'
+        required: true
 
 jobs:
   deploy_release:

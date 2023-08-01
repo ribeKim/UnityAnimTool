@@ -11,7 +11,7 @@ async function main() {
         const projectName = 'UnityAnimTool';
         const releaseTitle = `${projectName}_V${version}`;
         const fileName = `${projectName}_V${version}.zip`;
-        const projectDirectory = './*';
+        const projectDirectory = '.';
         const excludePatterns = [
             './deploy_release.js',
         ];
@@ -22,8 +22,8 @@ async function main() {
         console.log('Version from package.json:', version);
 
         // 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
-        // execSync(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`);
-        console.log(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`)
+        execSync(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`);
+        // console.log(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`)
         
         // GitHub 인스턴스 생성 및 레포지토리 가져오기
         const octokit = new GitHub(githubToken);

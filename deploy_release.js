@@ -1,6 +1,6 @@
 ﻿const {execSync} = require('child_process');
-const {GitHub} = require('@actions/github/lib/utils');
-const path = require('path');
+const core = require('@actions/core');
+const github = require('@actions/github');
 const fs = require('fs');
 
 async function main() {
@@ -26,19 +26,23 @@ async function main() {
         // console.log(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`)
 
         // GitHub 인스턴스 생성 및 레포지토리 가져오기
-        const octokit = new GitHub(githubToken);
+        const octokit = github.getOctokit(githubToken);
         const [owner, repo] = githubRepo.split('/');
-        const repository = octokit.getRepo(owner, repo);
+        const repository = octokit.rest.repos.get({ owner, repo });
 
         // 릴리스 생성
-        const release = await repository.releases.createRelease({
+        const release = await octokit.rest.repos.createRelease({
+            owner,
+            repository,
             tag_name: `V${version}`, // 태그를 "V버전" 형식으로 설정
             name: releaseTitle,
             body: 'Release Notes',
         });
 
         // 릴리스에 파일 첨부
-        await repository.releases.uploadReleaseAsset({
+        await octokit.rest.repos.uploadReleaseAsset({
+            owner,
+            repository,
             release_id: release.data.id,
             name: fileName,
             data: fs.readFileSync(fileName),

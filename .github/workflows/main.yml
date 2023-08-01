@@ -18,7 +18,9 @@ jobs:
           node-version: '14' # 자신의 Node.js 버전으로 변경
 
       - name: Install Dependencies
-        run: npm install @actions/github@latest
+        run: |
+          npm install @actions/core
+          npm install @actions/github
 
       - name: Create and Deploy Release
         env:

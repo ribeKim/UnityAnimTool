@@ -32,6 +32,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
         run: |
           echo "Current directory contents:"
-          ls
+          ls ../
           version=$(/bin/echo ${{ steps.get_version.outputs.version }}) # GitHub Actions에서 버전 값을 가져옴
           node deploy_release.js # deploy_release.js 파일 실행

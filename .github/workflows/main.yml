@@ -1,14 +1,9 @@
 name: Deploy Release
 
-on:
+on: 
+  workflow_dispatch:
   push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+' # 'v'로 시작하는 태그를 갖는 푸시에 반응
-  workflow_dispatch: # 수동으로 워크플로우 실행
-    inputs:
-      tag_name:
-        description: 'Tag name (e.g., v1.0.0)'
-        required: true
+    branches: master
 
 jobs:
   deploy_release:
@@ -25,11 +20,19 @@ jobs:
       - name: Install Dependencies
         run: npm install @actions/github
 
+      - name: Read Version from package.json
+        id: get_version
+        run: |
+          version=$(node -p "require('./path/to/your_project_directory/package.json').version")
+          echo "Version from package.json: $version"
+          echo "::set-output name=version::$version" # 버전 값을 출력하여 GitHub Actions에 전달
+
       - name: Create and Deploy Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
           TAG_NAME: ${{ github.event.inputs.tag_name }} # 수동 실행 시 입력한 태그 이름을 가져옴
         run: |
+          version=$(/bin/echo ${{ steps.get_version.outputs.version }}) # GitHub Actions에서 버전 값을 가져옴
           node - << EOF
           const { execSync } = require('child_process');
           const { GitHub } = require('@actions/github');
@@ -38,11 +41,10 @@ jobs:
             try {
               const githubToken = process.env.GITHUB_TOKEN;
               const githubRepo = process.env.GITHUB_REPOSITORY;
-              const tag = process.env.TAG_NAME.slice(1);
+              const tag = version;
               const projectName = 'UnityAnimTool';
-              const version = `V${tag}`;
-              const releaseTitle = `UnityAnimTool_V${version}`;
-              const fileName = `${projectName}_${version}.zip`;
+              const releaseTitle = `UnityAnimTool_V${tag}`;
+              const fileName = `${projectName}_${tag}.zip`;
 
               // 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
               execSync(`zip -r ${fileName} ./your_project_directory`);
@@ -54,7 +56,7 @@ jobs:
 
               // 릴리스 생성
               const release = await repository.releases.createRelease({
-                tag_name: version,
+                tag_name: tag,
                 name: releaseTitle,
                 body: 'Release Notes',
               });

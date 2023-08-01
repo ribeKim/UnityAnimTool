@@ -3,7 +3,12 @@ name: Deploy Release
 on:
   push:
     tags:
-      - 'v*' # 'v'로 시작하는 태그를 갖는 푸시에 반응
+      - 'v[0-9]+.[0-9]+.[0-9]+' # 'v'로 시작하는 태그를 갖는 푸시에 반응
+  workflow_dispatch: # 수동으로 워크플로우 실행
+    inputs:
+      tag_name:
+        description: 'Tag name (e.g., v1.0.0)'
+        required: true
 
 jobs:
   deploy_release:
@@ -12,49 +17,62 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Setup Python
-        uses: actions/setup-python@v2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
-          python-version: '3.x' # 자신의 파이썬 버전으로 변경
+          node-version: '14' # 자신의 Node.js 버전으로 변경
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install pygithub
+      - name: Install Dependencies
+        run: npm install @actions/github
 
       - name: Create and Deploy Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
+          TAG_NAME: ${{ github.event.inputs.tag_name }} # 수동 실행 시 입력한 태그 이름을 가져옴
         run: |
-          python - << EOF
-          import os
-          import subprocess
-          import shutil
-          from github import Github
+          node - << EOF
+          const { execSync } = require('child_process');
+          const { GitHub } = require('@actions/github');
 
-          # GitHub 액세스 토큰 또는 비밀 변수에서 가져오세요.
-          github_access_token = os.environ.get('GITHUB_TOKEN')
+          async function main() {
+            try {
+              const githubToken = process.env.GITHUB_TOKEN;
+              const githubRepo = process.env.GITHUB_REPOSITORY;
+              const tag = process.env.TAG_NAME.slice(1);
+              const projectName = 'UnityAnimTool';
+              const version = `V${tag}`;
+              const releaseTitle = `UnityAnimTool_V${version}`;
+              const fileName = `${projectName}_${version}.zip`;
 
-          # 릴리스에 업로드할 파일 및 버전 정보
-          project_name = 'UnityAnimTool'
-          version = os.environ.get('TAG_NAME')[1:]
-          file_name = f'{project_name}_V{version}.zip'
-          release_title = f'Release {version}'
+              // 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
+              execSync(`zip -r ${fileName} ./your_project_directory`);
 
-          # 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
-          shutil.make_archive(file_name, 'zip', './your_project_directory')
+              // GitHub 인스턴스 생성 및 레포지토리 가져오기
+              const octokit = new GitHub(githubToken);
+              const [owner, repo] = githubRepo.split('/');
+              const repository = octokit.repo(owner, repo);
 
-          # GitHub 인스턴스 생성 및 레포지토리 가져오기
-          g = Github(github_access_token)
-          repo = g.get_repo(os.environ.get('GITHUB_REPOSITORY'))
+              // 릴리스 생성
+              const release = await repository.releases.createRelease({
+                tag_name: version,
+                name: releaseTitle,
+                body: 'Release Notes',
+              });
 
-          # 릴리스 생성
-          release = repo.create_git_release(tag=version, name=release_title, body="Release Notes")
+              // 릴리스에 파일 첨부
+              await repository.releases.uploadReleaseAsset({
+                release_id: release.data.id,
+                name: fileName,
+                data: require('fs').readFileSync(fileName),
+              });
 
-          # 릴리스에 파일 첨부
-          with open(file_name + '.zip', 'rb') as f:
-              release.upload_asset(file_name + '.zip', content_type='application/zip', name=file_name)
+              // 압축 파일 제거
+              require('fs').unlinkSync(fileName);
+            } catch (error) {
+              console.error('Error occurred during deployment:', error);
+              process.exit(1);
+            }
+          }
 
-          # 압축 파일 제거
-          os.remove(file_name + '.zip')
+          main();
           EOF

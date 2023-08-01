@@ -20,16 +20,8 @@ jobs:
       - name: Install Dependencies
         run: npm install @actions/github
 
-      - name: Read Version from package.json
-        id: get_version
-        run: |
-          version=$(node -p "require('./package.json').version")
-          echo "Version from package.json: $version"
-          echo "::set-output name=version::$version" # 버전 값을 출력하여 GitHub Actions에 전달
-
       - name: Create and Deploy Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
         run: |
-          version=$(/bin/echo ${{ steps.get_version.outputs.version }}) # GitHub Actions에서 버전 값을 가져옴
           node deploy_release.js # deploy_release.js 파일 실행

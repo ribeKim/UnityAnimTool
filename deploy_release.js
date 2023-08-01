@@ -1,5 +1,5 @@
 ﻿const {execSync} = require('child_process');
-const {GitHub} = require('@actions/github');
+const {GitHub} = require('@actions/github/lib/utils');
 const path = require('path');
 const fs = require('fs');
 
@@ -24,7 +24,7 @@ async function main() {
         // 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
         execSync(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`);
         // console.log(`zip -r ${fileName} ${excludeOptions} ${projectDirectory}`)
-        
+
         // GitHub 인스턴스 생성 및 레포지토리 가져오기
         const octokit = new GitHub(githubToken);
         const [owner, repo] = githubRepo.split('/');

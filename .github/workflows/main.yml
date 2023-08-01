@@ -1,0 +1,60 @@
+name: Deploy Release
+
+on:
+  push:
+    tags:
+      - 'v*' # 'v'로 시작하는 태그를 갖는 푸시에 반응
+
+jobs:
+  deploy_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x' # 자신의 파이썬 버전으로 변경
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pygithub
+
+      - name: Create and Deploy Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
+        run: |
+          python - << EOF
+          import os
+          import subprocess
+          import shutil
+          from github import Github
+
+          # GitHub 액세스 토큰 또는 비밀 변수에서 가져오세요.
+          github_access_token = os.environ.get('GITHUB_TOKEN')
+
+          # 릴리스에 업로드할 파일 및 버전 정보
+          project_name = 'UnityAnimTool'
+          version = os.environ.get('TAG_NAME')[1:]
+          file_name = f'{project_name}_V{version}.zip'
+          release_title = f'Release {version}'
+
+          # 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)
+          shutil.make_archive(file_name, 'zip', './your_project_directory')
+
+          # GitHub 인스턴스 생성 및 레포지토리 가져오기
+          g = Github(github_access_token)
+          repo = g.get_repo(os.environ.get('GITHUB_REPOSITORY'))
+
+          # 릴리스 생성
+          release = repo.create_git_release(tag=version, name=release_title, body="Release Notes")
+
+          # 릴리스에 파일 첨부
+          with open(file_name + '.zip', 'rb') as f:
+              release.upload_asset(file_name + '.zip', content_type='application/zip', name=file_name)
+
+          # 압축 파일 제거
+          os.remove(file_name + '.zip')
+          EOF

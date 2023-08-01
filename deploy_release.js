@@ -28,7 +28,7 @@ async function main() {
         // GitHub 인스턴스 생성 및 레포지토리 가져오기
         const octokit = github.getOctokit(githubToken);
         const [owner, repo] = githubRepo.split('/');
-        const repository = octokit.rest.repos.get({ owner, repo });
+        const repository = octokit.rest.repos.get({owner, repo});
 
         // 릴리스 생성
         const release = await octokit.rest.repos.createRelease({

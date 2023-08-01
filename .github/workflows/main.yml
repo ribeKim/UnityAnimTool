@@ -9,7 +9,7 @@ on:
       tag_name:
         description: 'Tag name (e.g., v1.0.0)'
         required: true
-        
+
 jobs:
   deploy_release:
     runs-on: ubuntu-latest
@@ -28,7 +28,7 @@ jobs:
       - name: Create and Deploy Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
-          TAG_NAME: ${{ github.ref }} # 푸시된 태그 이름을 가져옴
+          TAG_NAME: ${{ github.event.inputs.tag_name }} # 수동 실행 시 입력한 태그 이름을 가져옴
         run: |
           node - << EOF
           const { execSync } = require('child_process');
@@ -38,10 +38,10 @@ jobs:
             try {
               const githubToken = process.env.GITHUB_TOKEN;
               const githubRepo = process.env.GITHUB_REPOSITORY;
-              const tag = process.env.TAG_NAME.slice(10); // 'refs/tags/v1.0.0'에서 'v' 제거
-              const projectName = 'YourProjectName';
+              const tag = process.env.TAG_NAME.slice(1);
+              const projectName = 'UnityAnimTool';
               const version = `V${tag}`;
-              const releaseTitle = `Release ${version}`;
+              const releaseTitle = `UnityAnimTool_V${version}`;
               const fileName = `${projectName}_${version}.zip`;
 
               // 압축 파일 생성 (이 예시에서는 간단하게 zip으로 생성)

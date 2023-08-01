@@ -1,12 +1,19 @@
 ﻿const { execSync } = require('child_process');
 const { GitHub } = require('@actions/github');
+const path = require('path');
+const fs = require('fs');
+
+async function getVersion() {
+    const packageJsonPath = path.join(process.cwd(), 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    return packageJson.version;
+}
 
 async function main() {
     try {
         const githubToken = process.env.GITHUB_TOKEN;
         const githubRepo = process.env.GITHUB_REPOSITORY;
-        // package.json 파일의 version 속성을 읽어옴
-        const version = require('./package.json').version;
+        const version = await getVersion();
         const projectName = 'UnityAnimTool';
         const releaseTitle = `${projectName}_V${version}`;
         const fileName = `${projectName}_V${version}.zip`;
@@ -30,11 +37,11 @@ async function main() {
         await repository.releases.uploadReleaseAsset({
             release_id: release.data.id,
             name: fileName,
-            data: require('fs').readFileSync(fileName),
+            data: fs.readFileSync(fileName),
         });
 
         // 압축 파일 제거
-        require('fs').unlinkSync(fileName);
+        fs.unlinkSync(fileName);
     } catch (error) {
         console.error('Error occurred during deployment:', error);
         process.exit(1);

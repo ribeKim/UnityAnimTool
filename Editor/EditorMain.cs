@@ -52,12 +52,12 @@ namespace Ribe.UnityAnimTool
 
             EditorGUILayout.BeginHorizontal();
 
-            if (GUILayout.Button("저장"))
+            if (GUILayout.Button("On/Off 생성"))
             {
                 SaveObjectListToAnimationClip();
             }
 
-            if (GUILayout.Button("라이트 세팅"))
+            if (GUILayout.Button("LightLimit 생성"))
             {
                 SaveObjectListToLightAnimationClip();
             }

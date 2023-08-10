@@ -166,6 +166,8 @@ namespace Ribe.UnityAnimTool
             var maxLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMaxLimit");
             var monoLightClipForLilToon = CreateLightAnimationClip(
                 activeList, "material._MonochromeLighting");
+            var asUnlitClipForLilToon = CreateLightAnimationClip(
+                activeList, "material._AsUnlit");
             
             SaveAnimationClip(shadowClipForPoiyomi, "1.ShadowForPoiyomi.anim", folder);
             SaveAnimationClip(worldLightClipForPoiyomi, "1.WorldLightForPoiyomi.anim", folder);
@@ -175,6 +177,7 @@ namespace Ribe.UnityAnimTool
             SaveAnimationClip(minLightClipForLilToon, "2.MinLightClipForLilToon.anim", folder);
             SaveAnimationClip(maxLightClipForLilToon, "2.MaxLightClipForLilToon.anim", folder);
             SaveAnimationClip(monoLightClipForLilToon, "2.MonoLightClipForLilToon.anim", folder);
+            SaveAnimationClip(asUnlitClipForLilToon, "2.AsUnlitClipForLilToon.anim", folder);
 
             Debug.Log("애니메이션 클립 저장 완료!");
         }

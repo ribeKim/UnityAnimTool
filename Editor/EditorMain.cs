@@ -123,37 +123,6 @@ namespace Ribe.UnityAnimTool
             EditorGUI.LabelField(objectRect, element.name);
         }
 
-        private void SaveObjectListToAnimationClip()
-        {
-            Debug.Log("애니메이션 클립 저장 시작!");
-
-            var folder = Path.Combine("Assets", "OnOffAnimationFolder");
-            if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
-
-            var activeList = _objects
-                .Where((obj, index) => _objectStates[index])
-                .ToList();
-
-            foreach (var o in activeList)
-            {
-                var animationPath = GetAnimationPath(o);
-
-                var onAnimClip = new AnimationClip();
-                var offAnimClip = new AnimationClip();
-
-                var onCurve = new AnimationCurve(new Keyframe(0.0f, 1.0f));
-                var offCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f));
-
-                onAnimClip.SetCurve(animationPath, typeof(GameObject), "m_IsActive", onCurve);
-                offAnimClip.SetCurve(animationPath, typeof(GameObject), "m_IsActive", offCurve);
-
-                SaveAnimationClip(onAnimClip, $"{o.name.Replace(" ", "")}On.anim", folder);
-                SaveAnimationClip(offAnimClip, $"{o.name.Replace(" ", "")}Off.anim", folder);
-            }
-
-            Debug.Log("애니메이션 클립 저장 완료!");
-        }
-
         private void SaveObjectListToLightAnimationClip()
         {
             Debug.Log("애니메이션 클립 저장 시작!");

@@ -50,14 +50,7 @@ namespace Ribe.UnityAnimTool
                 EditorGUILayout.HelpBox("아바타 오브젝트를 넣어주세요", MessageType.Error, true);
             }
 
-            EditorGUILayout.BeginHorizontal();
-
-            if (GUILayout.Button("On/Off 생성"))
-            {
-                SaveObjectListToAnimationClip();
-            }
-
-            if (GUILayout.Button("LightLimit 생성"))
+            if (GUILayout.Button("LightLimit 생성") && _objectStates.Count > 0)
             {
                 SaveObjectListToLightAnimationClip();
             }

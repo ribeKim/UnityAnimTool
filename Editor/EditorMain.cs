@@ -55,7 +55,6 @@ namespace Ribe.UnityAnimTool
                 SaveObjectListToLightAnimationClip();
             }
 
-            EditorGUILayout.EndHorizontal();
             DrawList();
         }
 
@@ -70,7 +69,28 @@ namespace Ribe.UnityAnimTool
                     displayHeader: true,
                     displayAddButton: false,
                     displayRemoveButton: false);
-                _reorderableList.drawHeaderCallback = rect => EditorGUI.LabelField(rect, "대상 오브젝트 목록");
+                
+                _reorderableList.drawHeaderCallback = (Rect rect) =>
+                {
+                    Rect rectButtonSelectAll = new Rect(rect.x + 15f, rect.y, 75f, rect.height);
+                    if (GUI.Button(rectButtonSelectAll, "전체 선택"))
+                    {
+                        for (int i = 0; i < _objectStates.Count; i++)
+                        {
+                            _objectStates[i] = true;
+                        }
+                    }
+
+                    Rect rectButtonDeselectAll = new Rect(rect.x + 90f, rect.y, 75f, rect.height);
+                    if (GUI.Button(rectButtonDeselectAll, "전체 해제"))
+                    {
+                        for (int i = 0; i < _objectStates.Count; i++)
+                        {
+                            _objectStates[i] = false;
+                        }
+                    }
+                    EditorGUI.LabelField(new Rect(rect.x + rectButtonDeselectAll.xMax + 10, rect.y, rect.width - 75f * 2, rect.height), "대상 오브젝트 목록");
+                };
                 _reorderableList.drawElementCallback += DrawElementCallback;
                 _reorderableList.onChangedCallback = list => Repaint();
             }

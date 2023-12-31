@@ -167,7 +167,7 @@ namespace Ribe.UnityAnimTool
         private AnimationClip CreateLightAnimationClip(List<GameObject> objects, string propertyName)
         {
             var animationClip = new AnimationClip();
-            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
 
             foreach (var animationPath in objects.Select(GetAnimationPath))
             {
@@ -180,7 +180,7 @@ namespace Ribe.UnityAnimTool
         private AnimationClip CreateLightAnimationClip(List<GameObject> objects, string[] propertyName)
         {
             var animationClip = new AnimationClip();
-            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1.0f, 1.0f));
+            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
 
             foreach (var animationPath in objects.Select(GetAnimationPath))
             {

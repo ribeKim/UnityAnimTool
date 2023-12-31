@@ -38,7 +38,7 @@ namespace Ribe.UnityAnimTool
                 "VRC Avatar", _baseAvatar, typeof(GameObject), true) as GameObject;
             if (EditorGUI.EndChangeCheck() && _baseAvatar != default)
             {
-                _objects = _baseAvatar.GetComponentsInChildren<SkinnedMeshRenderer>(true)
+                _objects = _baseAvatar.GetComponentsInChildren<Renderer>(true)
                     .Select(x => x.gameObject)
                     .ToList();
                 _objectStates = Enumerable.Repeat(true, _objects.Count).ToList();

@@ -18,10 +18,10 @@ namespace Ribe.UnityAnimTool
         ReorderableList _reorderableList;
         Vector2 _scrollPosition = Vector2.zero;
 
-        [MenuItem("RIBE/On Off anim generator")]
+        [MenuItem("RIBE/Light Limit Generator")]
         public static void OpenWindow()
         {
-            GetWindow<EditorMain>("On Off Animation Generator");
+            GetWindow<EditorMain>("Light Limit Generator");
         }
 
         private void OnEnable()

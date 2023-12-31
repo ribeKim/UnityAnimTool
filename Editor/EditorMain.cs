@@ -17,6 +17,10 @@ namespace Ribe.UnityAnimTool
         SerializedObject _serializedObject;
         ReorderableList _reorderableList;
         Vector2 _scrollPosition = Vector2.zero;
+        private bool _showFoldout = true;
+        private bool _genPoiyomi;
+        private bool _genLiltoon = true;
+        private string _savePath = "OnOffAnimationFolder";
 
         [MenuItem("RIBE/Light Limit Generator")]
         public static void OpenWindow()
@@ -31,8 +35,20 @@ namespace Ribe.UnityAnimTool
 
         private void OnGUI()
         {
-            GUILayout.Label("Avatar", EditorStyles.boldLabel);
+            AvatarSection();
+            OptionSection();
 
+            if (GUILayout.Button("LightLimit 생성") && _objectStates.Count > 0)
+            {
+                SaveObjectListToLightAnimationClip();
+            }
+
+            DrawList();
+        }
+
+        private void AvatarSection()
+        {
+            GUILayout.Label("Avatar", EditorStyles.boldLabel);
             EditorGUI.BeginChangeCheck();
             _baseAvatar = EditorGUILayout.ObjectField(
                 "VRC Avatar", _baseAvatar, typeof(GameObject), true) as GameObject;
@@ -49,13 +65,15 @@ namespace Ribe.UnityAnimTool
                 ClearObjects();
                 EditorGUILayout.HelpBox("아바타 오브젝트를 넣어주세요", MessageType.Error, true);
             }
+        }
 
-            if (GUILayout.Button("LightLimit 생성") && _objectStates.Count > 0)
-            {
-                SaveObjectListToLightAnimationClip();
-            }
-
-            DrawList();
+        private void OptionSection()
+        {
+            _showFoldout = EditorGUILayout.Foldout(_showFoldout, "설정 옵션");
+            if (!_showFoldout) return;
+            _savePath = EditorGUILayout.TextField("저장 경로", _savePath);
+            _genPoiyomi = EditorGUILayout.Toggle("포이요미", _genPoiyomi);
+            _genLiltoon = EditorGUILayout.Toggle("릴툰", _genLiltoon);
         }
 
         private void DrawList()
@@ -69,7 +87,7 @@ namespace Ribe.UnityAnimTool
                     displayHeader: true,
                     displayAddButton: false,
                     displayRemoveButton: false);
-                
+
                 _reorderableList.drawHeaderCallback = (Rect rect) =>
                 {
                     Rect rectButtonSelectAll = new Rect(rect.x + 15f, rect.y, 75f, rect.height);
@@ -89,7 +107,10 @@ namespace Ribe.UnityAnimTool
                             _objectStates[i] = false;
                         }
                     }
-                    EditorGUI.LabelField(new Rect(rect.x + rectButtonDeselectAll.xMax + 10, rect.y, rect.width - 75f * 2, rect.height), "대상 오브젝트 목록");
+
+                    EditorGUI.LabelField(
+                        new Rect(rect.x + rectButtonDeselectAll.xMax + 10, rect.y, rect.width - 75f * 2, rect.height),
+                        "대상 오브젝트 목록");
                 };
                 _reorderableList.drawElementCallback += DrawElementCallback;
                 _reorderableList.onChangedCallback = list => Repaint();
@@ -127,39 +148,45 @@ namespace Ribe.UnityAnimTool
         {
             Debug.Log("애니메이션 클립 저장 시작!");
 
-            var folder = Path.Combine("Assets", "OnOffAnimationFolder");
+            var folder = Path.Combine("Assets", _savePath);
             if (!Directory.Exists(folder)) Directory.CreateDirectory(folder);
 
             var activeList = _objects
                 .Where((obj, index) => _objectStates[index])
                 .ToList();
             
-            var shadowClipForPoiyomi = CreateLightAnimationClip(activeList, "material._ShadowStrength");
-            var worldLightClipForPoiyomi = CreateLightAnimationClip(activeList, new[]
+            if (_genPoiyomi)
             {
-                "material._LightingMonochromatic",
-                "material._LightingAdditiveMonochromatic"
-            });
-            var minLightClipForPoiyomi = CreateLightAnimationClip(
-                activeList, "material._LightingMinLightBrightness");
-            var maxLightClipForPoiyomi = CreateLightAnimationClip(activeList, "material._LightingCap");
+                var shadowClipForPoiyomi = CreateLightAnimationClip(activeList, "material._ShadowStrength");
+                var worldLightClipForPoiyomi = CreateLightAnimationClip(activeList, new[]
+                {
+                    "material._LightingMonochromatic",
+                    "material._LightingAdditiveMonochromatic"
+                });
+                var minLightClipForPoiyomi = CreateLightAnimationClip(
+                    activeList, "material._LightingMinLightBrightness");
+                var maxLightClipForPoiyomi = CreateLightAnimationClip(activeList, "material._LightingCap");
 
-            var minLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMinLimit");
-            var maxLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMaxLimit");
-            var monoLightClipForLilToon = CreateLightAnimationClip(
-                activeList, "material._MonochromeLighting");
-            var asUnlitClipForLilToon = CreateLightAnimationClip(
-                activeList, "material._AsUnlit");
-            
-            SaveAnimationClip(shadowClipForPoiyomi, "1.ShadowForPoiyomi.anim", folder);
-            SaveAnimationClip(worldLightClipForPoiyomi, "1.WorldLightForPoiyomi.anim", folder);
-            SaveAnimationClip(minLightClipForPoiyomi, "1.MinLightForPoiyomi.anim", folder);
-            SaveAnimationClip(maxLightClipForPoiyomi, "1.MaxLightForPoiyomi.anim", folder);
-            
-            SaveAnimationClip(minLightClipForLilToon, "2.MinLightClipForLilToon.anim", folder);
-            SaveAnimationClip(maxLightClipForLilToon, "2.MaxLightClipForLilToon.anim", folder);
-            SaveAnimationClip(monoLightClipForLilToon, "2.MonoLightClipForLilToon.anim", folder);
-            SaveAnimationClip(asUnlitClipForLilToon, "2.AsUnlitClipForLilToon.anim", folder);
+                Common.SaveAnimationClip(shadowClipForPoiyomi, "1.ShadowForPoiyomi.anim", folder);
+                Common.SaveAnimationClip(worldLightClipForPoiyomi, "1.WorldLightForPoiyomi.anim", folder);
+                Common.SaveAnimationClip(minLightClipForPoiyomi, "1.MinLightForPoiyomi.anim", folder);
+                Common.SaveAnimationClip(maxLightClipForPoiyomi, "1.MaxLightForPoiyomi.anim", folder);
+            }
+
+            if (_genLiltoon)
+            {
+                var minLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMinLimit");
+                var maxLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMaxLimit");
+                var monoLightClipForLilToon = CreateLightAnimationClip(
+                    activeList, "material._MonochromeLighting");
+                var asUnlitClipForLilToon = CreateLightAnimationClip(
+                    activeList, "material._AsUnlit");
+
+                Common.SaveAnimationClip(minLightClipForLilToon, "2.MinLightClipForLilToon.anim", folder);
+                Common.SaveAnimationClip(maxLightClipForLilToon, "2.MaxLightClipForLilToon.anim", folder);
+                Common.SaveAnimationClip(monoLightClipForLilToon, "2.MonoLightClipForLilToon.anim", folder);
+                Common.SaveAnimationClip(asUnlitClipForLilToon, "2.AsUnlitClipForLilToon.anim", folder);
+            }
 
             Debug.Log("애니메이션 클립 저장 완료!");
         }
@@ -169,7 +196,7 @@ namespace Ribe.UnityAnimTool
             var animationClip = new AnimationClip();
             var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
 
-            foreach (var animationPath in objects.Select(GetAnimationPath))
+            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
             {
                 animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), propertyName, curve);
             }
@@ -182,7 +209,7 @@ namespace Ribe.UnityAnimTool
             var animationClip = new AnimationClip();
             var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
 
-            foreach (var animationPath in objects.Select(GetAnimationPath))
+            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
             {
                 foreach (var s in propertyName)
                 {
@@ -191,33 +218,6 @@ namespace Ribe.UnityAnimTool
             }
 
             return animationClip;
-        }
-
-        private void SaveAnimationClip(AnimationClip animationClip, string clipName, string folder)
-        {
-            var savePath = Path.Combine(folder, clipName).Replace("\\", "/");
-            if (File.Exists(savePath)) File.Delete(savePath);
-
-            AssetDatabase.CreateAsset(animationClip, savePath);
-            AssetDatabase.Refresh();
-        }
-
-        private string GetAnimationPath(GameObject gameObject)
-        {
-            var parent = gameObject.transform.parent;
-            var path = gameObject.name;
-
-            while (parent != null)
-            {
-                if (parent.parent != null)
-                {
-                    path = parent.name + "/" + path;
-                }
-
-                parent = parent.parent;
-            }
-
-            return path;
         }
     }
 }

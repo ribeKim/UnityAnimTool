@@ -46,6 +46,19 @@ namespace Ribe.UnityAnimTool
             return animationClip;
         }
 
+        public static AnimationClip CreateFlipLightAnimationClip(IEnumerable<GameObject> objects, string propertyName)
+        {
+            var animationClip = new AnimationClip();
+            var curve = new AnimationCurve(new Keyframe(0.0f, 1.0f), new Keyframe(0.01f, 0.0f));
+
+            foreach (var animationPath in objects.Select(GetAnimationPath))
+            {
+                animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), propertyName, curve);
+            }
+
+            return animationClip;
+        }
+
         public static AnimationClip CreateLightAnimationClip(IEnumerable<GameObject> objects, string[] propertyName)
         {
             var animationClip = new AnimationClip();

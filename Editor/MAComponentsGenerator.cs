@@ -33,14 +33,18 @@ namespace Ribe.UnityAnimTool
             mergeAnimator.matchAvatarWriteDefaults = true;
             mergeAnimator.deleteAttachedAnimator = true;
 
-            var menuGroup = lightLimitChanger.GetComponent<ModularAvatarMenuGroup>();
-            if (!menuGroup)
+            var menuItem = lightLimitChanger.GetComponent<ModularAvatarMenuItem>();
+            if (!menuItem)
             {
-                lightLimitChanger.AddComponent<ModularAvatarMenuGroup>();
+                menuItem = lightLimitChanger.AddComponent<ModularAvatarMenuItem>();
             }
 
+            menuItem.Control = menuItem.Control ?? new VRCExpressionsMenu.Control();
+            menuItem.Control.type = VRCExpressionsMenu.Control.ControlType.SubMenu;
+            menuItem.MenuSource = SubmenuSource.Children;
+
             var avatarParameters = lightLimitChanger.GetComponent<ModularAvatarParameters>();
-            if (!menuGroup)
+            if (!avatarParameters)
             {
                 avatarParameters = lightLimitChanger.AddComponent<ModularAvatarParameters>();
             }
@@ -82,19 +86,16 @@ namespace Ribe.UnityAnimTool
                 menuItem = hasGameObject.GetComponent<ModularAvatarMenuItem>();
             }
 
-            var control = new VRCExpressionsMenu.Control
+            menuItem.Control = menuItem.Control ?? new VRCExpressionsMenu.Control();
+            menuItem.Control.name = name;
+            menuItem.Control.type = VRCExpressionsMenu.Control.ControlType.RadialPuppet;
+            menuItem.Control.subParameters = new[]
             {
-                name = name,
-                type = VRCExpressionsMenu.Control.ControlType.RadialPuppet,
-                subParameters = new[]
+                new VRCExpressionsMenu.Control.Parameter
                 {
-                    new VRCExpressionsMenu.Control.Parameter
-                    {
-                        name = $"RIBE/{name}"
-                    }
+                    name = $"RIBE/{name}"
                 }
             };
-            menuItem.Control = control;
 
             return hasGameObject;
         }

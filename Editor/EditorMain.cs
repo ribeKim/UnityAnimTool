@@ -157,30 +157,23 @@ namespace Ribe.UnityAnimTool
             
             if (_genPoiyomi)
             {
-                var shadowClipForPoiyomi = CreateLightAnimationClip(activeList, "material._ShadowStrength");
-                var worldLightClipForPoiyomi = CreateLightAnimationClip(activeList, new[]
-                {
-                    "material._LightingMonochromatic",
-                    "material._LightingAdditiveMonochromatic"
-                });
-                var minLightClipForPoiyomi = CreateLightAnimationClip(
-                    activeList, "material._LightingMinLightBrightness");
-                var maxLightClipForPoiyomi = CreateLightAnimationClip(activeList, "material._LightingCap");
+                var shadowClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_SHADOW_LIGHT);
+                var worldLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_GRAY_LIGHT);
+                var minLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_MIN_LIGHT);
+                var maxLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_MAX_LIGHT);
 
                 Common.SaveAnimationClip(shadowClipForPoiyomi, "1.ShadowForPoiyomi.anim", folder);
                 Common.SaveAnimationClip(worldLightClipForPoiyomi, "1.WorldLightForPoiyomi.anim", folder);
                 Common.SaveAnimationClip(minLightClipForPoiyomi, "1.MinLightForPoiyomi.anim", folder);
                 Common.SaveAnimationClip(maxLightClipForPoiyomi, "1.MaxLightForPoiyomi.anim", folder);
             }
-
+            
             if (_genLiltoon)
             {
-                var minLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMinLimit");
-                var maxLightClipForLilToon = CreateLightAnimationClip(activeList, "material._LightMaxLimit");
-                var monoLightClipForLilToon = CreateLightAnimationClip(
-                    activeList, "material._MonochromeLighting");
-                var asUnlitClipForLilToon = CreateLightAnimationClip(
-                    activeList, "material._AsUnlit");
+                var minLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MIN_LIGHT);
+                var maxLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MAX_LIGHT);
+                var monoLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MONO_LIGHT);
+                var asUnlitClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_UNLIT_LIGHT);
 
                 Common.SaveAnimationClip(minLightClipForLilToon, "2.MinLightClipForLilToon.anim", folder);
                 Common.SaveAnimationClip(maxLightClipForLilToon, "2.MaxLightClipForLilToon.anim", folder);

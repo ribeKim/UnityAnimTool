@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace Ribe.UnityAnimTool
 {
-    public class EditorHierarchy
+    public class ObjectActiveToggleGenerator
     {
-        [MenuItem("GameObject/GenerateOnOff", false, 10)]
-        static void GenerateOnOff(MenuCommand menuCommand)
+        [MenuItem("GameObject/리베툴/온오프", false, 3)]
+        static void Generate(MenuCommand menuCommand)
         { 
             var go = menuCommand.context as GameObject;
             if (go == null) return;

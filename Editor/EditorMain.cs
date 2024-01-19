@@ -157,10 +157,10 @@ namespace Ribe.UnityAnimTool
             
             if (_genPoiyomi)
             {
-                var shadowClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_SHADOW_LIGHT);
-                var worldLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_GRAY_LIGHT);
-                var minLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_MIN_LIGHT);
-                var maxLightClipForPoiyomi = CreateLightAnimationClip(activeList, Common.POIYOMI_MAX_LIGHT);
+                var shadowClipForPoiyomi = Common.CreateLightAnimationClip(activeList, Common.POIYOMI_SHADOW_LIGHT);
+                var worldLightClipForPoiyomi = Common.CreateLightAnimationClip(activeList, Common.POIYOMI_GRAY_LIGHT);
+                var minLightClipForPoiyomi = Common.CreateLightAnimationClip(activeList, Common.POIYOMI_MIN_LIGHT);
+                var maxLightClipForPoiyomi = Common.CreateLightAnimationClip(activeList, Common.POIYOMI_MAX_LIGHT);
 
                 Common.SaveAnimationClip(shadowClipForPoiyomi, "1.ShadowForPoiyomi.anim", folder);
                 Common.SaveAnimationClip(worldLightClipForPoiyomi, "1.WorldLightForPoiyomi.anim", folder);
@@ -170,10 +170,10 @@ namespace Ribe.UnityAnimTool
             
             if (_genLiltoon)
             {
-                var minLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MIN_LIGHT);
-                var maxLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MAX_LIGHT);
-                var monoLightClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_MONO_LIGHT);
-                var asUnlitClipForLilToon = CreateLightAnimationClip(activeList, Common.LILTOON_UNLIT_LIGHT);
+                var minLightClipForLilToon = Common.CreateLightAnimationClip(activeList, Common.LILTOON_MIN_LIGHT);
+                var maxLightClipForLilToon = Common.CreateLightAnimationClip(activeList, Common.LILTOON_MAX_LIGHT);
+                var monoLightClipForLilToon = Common.CreateLightAnimationClip(activeList, Common.LILTOON_MONO_LIGHT);
+                var asUnlitClipForLilToon = Common.CreateLightAnimationClip(activeList, Common.LILTOON_UNLIT_LIGHT);
 
                 Common.SaveAnimationClip(minLightClipForLilToon, "2.MinLightClipForLilToon.anim", folder);
                 Common.SaveAnimationClip(maxLightClipForLilToon, "2.MaxLightClipForLilToon.anim", folder);
@@ -184,33 +184,5 @@ namespace Ribe.UnityAnimTool
             Debug.Log("애니메이션 클립 저장 완료!");
         }
 
-        private AnimationClip CreateLightAnimationClip(List<GameObject> objects, string propertyName)
-        {
-            var animationClip = new AnimationClip();
-            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
-
-            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
-            {
-                animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), propertyName, curve);
-            }
-
-            return animationClip;
-        }
-
-        private AnimationClip CreateLightAnimationClip(List<GameObject> objects, string[] propertyName)
-        {
-            var animationClip = new AnimationClip();
-            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
-
-            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
-            {
-                foreach (var s in propertyName)
-                {
-                    animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), s, curve);
-                }
-            }
-
-            return animationClip;
-        }
     }
 }

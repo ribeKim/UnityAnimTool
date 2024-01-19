@@ -1,4 +1,6 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -28,6 +30,36 @@ namespace Ribe.UnityAnimTool
 
             AssetDatabase.CreateAsset(animationClip, savePath);
             AssetDatabase.Refresh();
+        }
+        
+        
+        public static AnimationClip CreateLightAnimationClip(IEnumerable<GameObject> objects, string propertyName)
+        {
+            var animationClip = new AnimationClip();
+            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
+
+            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
+            {
+                animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), propertyName, curve);
+            }
+
+            return animationClip;
+        }
+
+        public static AnimationClip CreateLightAnimationClip(IEnumerable<GameObject> objects, string[] propertyName)
+        {
+            var animationClip = new AnimationClip();
+            var curve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(0.01f, 1.0f));
+
+            foreach (var animationPath in objects.Select(Common.GetAnimationPath))
+            {
+                foreach (var s in propertyName)
+                {
+                    animationClip.SetCurve(animationPath, typeof(SkinnedMeshRenderer), s, curve);
+                }
+            }
+
+            return animationClip;
         }
 
         public static string GetAnimationPath(GameObject gameObject)

@@ -50,6 +50,7 @@ namespace Ribe.UnityAnimTool
             var targetRenderers = GetRendererGameObjects(go);
             GenerateAnimation(targetRenderers, clips, folder);
             AnimatorControllerGenerator.Generate(folder, clips.Keys.ToArray());
+            MAComponentsGenerator.Generate(go, clips.Keys.ToArray(), folder);
             Debug.Log("애니메이션 클립 저장 완료!");
         }
 

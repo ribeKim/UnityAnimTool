@@ -9,7 +9,7 @@ namespace Ribe.UnityAnimTool
 {
     public class MALightLimitGenerator
     {
-        [MenuItem("GameObject/리베툴/포이요미", false, 1)]
+        [MenuItem("GameObject/리베툴/포이요미", false, 2)]
         static void Poiyomi(MenuCommand menuCommand)
         {
             var go = menuCommand.context as GameObject;
@@ -20,13 +20,13 @@ namespace Ribe.UnityAnimTool
                 { "max", Common.POIYOMI_SHADOW_LIGHT },
                 { "shadow", Common.POIYOMI_GRAY_LIGHT },
                 { "gray", Common.POIYOMI_MIN_LIGHT },
-                { "min", Common.POIYOMI_MAX_LIGHT }
+                { "min", Common.POIYOMI_MAX_LIGHT },
             };
 
             Generate(go, lightClips);
         }
 
-        [MenuItem("GameObject/리베툴/릴툰", false, 2)]
+        [MenuItem("GameObject/리베툴/릴툰", false, 3)]
         static void Liltoon(MenuCommand menuCommand)
         {
             var go = menuCommand.context as GameObject;
@@ -37,7 +37,23 @@ namespace Ribe.UnityAnimTool
                 { "min", Common.LILTOON_MIN_LIGHT },
                 { "max", Common.LILTOON_MAX_LIGHT },
                 { "mono", Common.LILTOON_MONO_LIGHT },
-                { "unlit", Common.LILTOON_UNLIT_LIGHT }
+            };
+
+            Generate(go, lightClips);
+        }
+
+        [MenuItem("GameObject/리베툴/릴툰(언릿화 포함)", false, 4)]
+        static void LiltoonWithUnlit(MenuCommand menuCommand)
+        {
+            var go = menuCommand.context as GameObject;
+            if (go == null) return;
+
+            var lightClips = new Dictionary<string, dynamic>
+            {
+                { "min", Common.LILTOON_MIN_LIGHT },
+                { "max", Common.LILTOON_MAX_LIGHT },
+                { "mono", Common.LILTOON_MONO_LIGHT },
+                { "unlit", Common.LILTOON_UNLIT_LIGHT },
             };
 
             Generate(go, lightClips);

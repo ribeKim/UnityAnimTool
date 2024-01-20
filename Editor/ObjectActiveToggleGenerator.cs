@@ -6,7 +6,7 @@ namespace Ribe.UnityAnimTool
 {
     public class ObjectActiveToggleGenerator
     {
-        [MenuItem("GameObject/리베툴/온오프", false, 3)]
+        [MenuItem("GameObject/리베툴/온오프", false, 1)]
         static void Generate(MenuCommand menuCommand)
         { 
             var go = menuCommand.context as GameObject;

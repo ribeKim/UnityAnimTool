@@ -9,6 +9,7 @@ namespace Ribe.UnityAnimTool
         public static void Generate(string path, string[] names)
         {
             var controller = AnimatorController.CreateAnimatorControllerAtPath($"{path}/MA_FX.controller");
+            AssetDatabase.StartAssetEditing();
             foreach (var clip in names)
             {
                 controller.AddParameter($"RIBE/{clip}", AnimatorControllerParameterType.Float);
@@ -37,6 +38,11 @@ namespace Ribe.UnityAnimTool
             }
 
             controller.AddMotion(blendTree);
-        }
+            AssetDatabase.StopAssetEditing();
+         
+            EditorUtility.SetDirty(controller);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+            }
     }
 }

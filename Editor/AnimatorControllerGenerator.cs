@@ -37,6 +37,7 @@ namespace Ribe.UnityAnimTool
                 blendTree.children = childMotions;
             }
 
+            AssetDatabase.AddObjectToAsset(blendTree, controller);
             controller.AddMotion(blendTree);
             AssetDatabase.StopAssetEditing();
          

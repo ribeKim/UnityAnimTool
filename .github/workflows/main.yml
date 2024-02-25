@@ -3,15 +3,11 @@
 
 on:
   push:
-    branches:
-      - master
-    tags-ignore:
-      - 'v*'
+    tags:
+      - "v*"
   pull_request:
-    branches:
-      - master
-    tags-ignore:
-      - 'v*'
+    tags:
+      - "v*"
 
 name: Create Release
 
@@ -24,7 +20,7 @@ jobs:
     steps:
       - name: Create Release
         id: create_release
-        uses: actions/create-release@latest
+        uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -34,21 +30,18 @@ jobs:
             Automated Release by GitHub Action CI
           draft: false
           prerelease: false
+          
   build:
     name: Release Build
     needs: create_release
     
-    strategy:
-      matrix:
-        kind: [x86, x64]
-          
     runs-on: ubuntu-latest
     steps:
       - name: Install Zip
         run: sudo apt-get install zip gzip tar
           
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Zip Artifacts
         run: zip ${{ github.ref }}.zip package.json readme.txt Ribe.UnityAnimTool.Editor.asmdef UnityAnimTool.url Editor /

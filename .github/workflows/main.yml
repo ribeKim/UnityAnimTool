@@ -1,29 +1,65 @@
-name: Deploy Release
+# references: https://www.sysnet.pe.kr/2/0/12542
+#             https://github.com/actions/create-release
 
 on:
-  workflow_dispatch:
   push:
-    branches: master
+    branches:
+      - master
+    tags-ignore:
+      - 'v*'
+  pull_request:
+    branches:
+      - master
+    tags-ignore:
+      - 'v*'
+
+name: Create Release
 
 jobs:
-  deploy_release:
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@latest
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ${{env.BUILD_CONFIGURATION}} ${{ github.ref }}
+          body: |
+            Automated Release by GitHub Action CI
+          draft: false
+          prerelease: false
+  build:
+    name: Release Build
+    needs: create_release
+    
+    strategy:
+      matrix:
+        kind: [x86, x64]
+          
     runs-on: ubuntu-latest
     steps:
+      - name: Install Zip
+        run: sudo apt-get install zip gzip tar
+          
       - name: Checkout code
         uses: actions/checkout@v2
+        
+      - name: Zip Artifacts
+        run: zip ${{ github.ref }}.zip package.json readme.txt Ribe.UnityAnimTool.Editor.asmdef UnityAnimTool.url Editor /
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14' # 자신의 Node.js 버전으로 변경
-
-      - name: Install Dependencies
-        run: |
-          npm install @actions/core
-          npm install @actions/github
-
-      - name: Create and Deploy Release
+      - name: Upload Release Asset
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # 자동으로 제공되는 GitHub 액세스 토큰 사용
-        run: |
-          node deploy_release.js # deploy_release.js 파일 실행
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ./${{env.PRJNAME}}.${{matrix.kind}}.zip
+          asset_name: ${{env.PRJNAME}}.${{matrix.kind}}.zip
+          asset_content_type: application/zip
